@@ -5,7 +5,7 @@ tags: [Springboot,Spring Security]
 categories: Java
 toc: true
 ---
-公司后台管理项目之前采用的是shiro做权限验证，前段时间花了点时间替换成了Spring Security，现在有时间将配置过程整理了一下。
+&emsp;&emsp;公司后台管理项目之前采用的是shiro做权限验证，前段时间花了点时间替换成了Spring Security，现在有时间将配置过程整理了一下。
 
 
 ### pom.xml引入依赖
@@ -34,10 +34,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 {% endcodeblock %}
 
-添加这个类后，基本的验证功能就有了
+&emsp;&emsp;这样简单配置后，基本的验证功能就有了
 
 #### 关于@EnableWebSecurity
-@EnableWebSecurity与WebSecurityConfigurerAdapter一起配合即可提供基于web的security，这俩是整个Spring Security配置的基础。
+&emsp;&emsp;<font color=red>@EnableWebSecurity与WebSecurityConfigurerAdapter一起配合即可提供基于web的security，这俩是整个Spring Security配置的基础。</font>
 
 
 {% codeblock EnableWebSecurity.class  lang:java %}
@@ -52,7 +52,7 @@ public @interface EnableWebSecurity {
 }
 {% endcodeblock %}
 
-这里需要注意的是@EnableGlobalAuthentication这个注解
+&emsp;&emsp;这里需要注意的是<font color=red>@EnableGlobalAuthentication</font>：
 
 {% codeblock EnableGlobalAuthentication.class lang:java %}
 @Retention(RetentionPolicy.RUNTIME)
@@ -64,7 +64,7 @@ public @interface EnableGlobalAuthentication {
 }
 {% endcodeblock %}
 
-在这个注解中，又导入了另外一个配置类AuthenticationConfiguration，AuthenticationConfiguration注册了AuthenticationManagerBuilder，其作用是对用户提交的用户名和密码进行验证，它是Spring Security账户验证的核心
+&emsp;&emsp;在这个注解中，又导入了另外一个配置类AuthenticationConfiguration，AuthenticationConfiguration注册了AuthenticationManagerBuilder，其作用是对用户提交的用户名和密码进行验证，它是Spring Security账户验证的核心
 
 {% codeblock lang:java %}
 @Bean
@@ -73,7 +73,7 @@ public @interface EnableGlobalAuthentication {
     }
 {% endcodeblock %}
 
-与HttpSecurity类似，AuthenticationManagerBuilder也是SecurityBuilder的一个子类。不同的是，HttpSecurity使用到的SecurityConfigurer基本上最终产生的都是一个过滤器，而AuthenticationManagerBuilder使用到SecurityConfiguer最终产生的都是AuthenticationManager的一个子类实例ProviderManager。ProviderManager类的创建是通过performBuild方法创建的。
+&emsp;&emsp;与HttpSecurity类似，AuthenticationManagerBuilder也是SecurityBuilder的一个子类。不同的是，HttpSecurity使用到的SecurityConfigurer基本上最终产生的都是一个过滤器，而AuthenticationManagerBuilder使用到SecurityConfiguer最终产生的都是AuthenticationManager的一个子类实例ProviderManager。ProviderManager类的创建是通过performBuild方法创建的。
 
 {% codeblock lang:java %}
 protected ProviderManager performBuild() throws Exception {
@@ -95,7 +95,8 @@ protected ProviderManager performBuild() throws Exception {
 }
 {% endcodeblock %}
 
-SpringSecurity的每一种方式都对应一个provider。如果需要联合使用多种验证方式，ProviderManager就可以帮助我们来管理这些provider，例如先用谁验证，后用谁验证，以及是否只要有一个provider验证成功就算用户已经成功验证等。 AuthenticationProvider的创建：
+&emsp;&emsp;SpringSecurity的每一种方式都对应一个provider。如果需要联合使用多种验证方式，ProviderManager就可以帮助我们来管理这些provider，例如先用谁验证，后用谁验证，以及是否只要有一个provider验证成功就算用户已经成功验证等。 
+AuthenticationProvider的创建：
 
 {% codeblock lang:java %}
     public InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> inMemoryAuthentication() throws Exception {
@@ -116,10 +117,10 @@ SpringSecurity的每一种方式都对应一个provider。如果需要联合使�
     }
 {% endcodeblock %}
 
-用户在登陆时，会被登陆验证拦截器AuthenticationProcessingFilter拦截，调用AuthenticationManager的实现，而AuthenticationManager会调用ProviderManager来获取用户验证信息，如果验证通过后会将用户的权限信息封装成一个User放到spring的全局缓存SecurityContextHolder中，以备后面访问资源时使用。登陆成功访问资源（即授权管理）时，会通过AbstractSecurityInterceptor拦截器拦截，其中会调用FilterInvocationSecurityMetadataSource的方法来获取被拦截url所需的全部权限，然后调用授权管理器AccessDecisionManager，这个授权管理器会通过spring的全局缓存SecurityContextHolder获取用户的权限信息，还会获取被拦截的url和被拦截url所需的全部权限，然后根据所配的策略（有：一票决定，一票否定，少数服从多数等），如果权限足够，则返回，权限不够则报错并调用权限不足页面。
+&emsp;&emsp;用户在登陆时，会被登陆验证拦截器AuthenticationProcessingFilter拦截，调用AuthenticationManager的实现，而AuthenticationManager会调用ProviderManager来获取用户验证信息，如果验证通过后会将用户的权限信息封装成一个User放到spring的全局缓存SecurityContextHolder中，以备后面访问资源时使用。登陆成功访问资源（即授权管理）时，会通过AbstractSecurityInterceptor拦截器拦截，其中会调用FilterInvocationSecurityMetadataSource的方法来获取被拦截url所需的全部权限，然后调用授权管理器AccessDecisionManager，这个授权管理器会通过spring的全局缓存SecurityContextHolder获取用户的权限信息，还会获取被拦截的url和被拦截url所需的全部权限，然后根据所配的策略（有：一票决定，一票否定，少数服从多数等），如果权限足够，则返回，权限不够则报错并调用权限不足页面。
                                                                                                                                                                                                       
 #### 开启Spring Security自带注解
-Spring Security默认禁用注解，要想开启注解，需要在继承WebSecurityConfigurerAdapter的类上加@EnableGlobalMethodSecurity注解，并在该类中将AuthenticationManager定义为Bean
+&emsp;&emsp;Spring Security默认禁用注解，要想开启注解，需要在继承WebSecurityConfigurerAdapter的类上加@EnableGlobalMethodSecurity注解，并在该类中将AuthenticationManager定义为Bean
 
 {% codeblock lang:java %}
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -148,7 +149,7 @@ securedEnabled注解：
 
 ### 其他配置
 #### 基于UserDetailsService的认证服务
-spring security提供了多种认证方式(内存、JDBC、LDAP和自定义UserDetailService验证)，不管是哪一种验证方式，都是通过一个自动注入的AuthenticationManagerBuilder对象来完成的。这个类用于构建AuthenticationManager，其作用是对用户提交的用户名和密码进行验证
+&emsp;&emsp;spring security提供了多种认证方式(内存、JDBC、LDAP和自定义UserDetailService验证)，不管是哪一种验证方式，都是通过一个自动注入的AuthenticationManagerBuilder对象来完成的。这个类用于构建AuthenticationManager，其作用是对用户提交的用户名和密码进行验证
 
 ##### 定义SecurityUser用户实体类
 
@@ -168,7 +169,7 @@ public class User implements UserDetails, CredentialsContainer {
 }
 {% endcodeblock %}
 
-项目中经常需要获取登录用户的角色信息，因此这里直接将role信息存进SecurityUser类中
+&emsp;&emsp;项目中经常需要获取登录用户的角色信息，因此这里直接将role信息存进SecurityUser类中
 
 {% codeblock SecurityUser lang:java %}
 public class SecurityUser extends User {
@@ -256,7 +257,7 @@ public class SecurityUserService implements UserDetailsService {
 }
 {% endcodeblock %}
 
-这里有一个坑，用户在登录失败时，需要根据错误信息提示用户是账号密码错误。但在Spring Security中，默认情况下不管你是用户名不存在，密码错误，还是其他错误，都会转换成Bad credentials异常信息，而不是具体的错误。原因在于DaoAuthenticationProvider的父类AbstractUserDetailsAuthenticationProvider的authenticate方法中进行了处理：
+&emsp;&emsp;这里有一个坑，用户在登录失败时，需要根据错误信息提示用户是账号密码错误。但在Spring Security中，默认情况下不管你是用户名不存在，密码错误，还是其他错误，都会转换成Bad credentials异常信息，而不是具体的错误。原因在于DaoAuthenticationProvider的父类AbstractUserDetailsAuthenticationProvider的authenticate方法中进行了处理：
 {% codeblock lang:java %} 
 try {  
     user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);  
@@ -272,7 +273,7 @@ try {
 }   
 {% endcodeblock %}
 
-所以如果这里需要做自定义过滤验证，可以直接抛出BadCredentialsException。
+&emsp;&emsp;所以如果这里需要做自定义过滤验证，可以直接抛出BadCredentialsException。
 如果前端是JSP，可以通过 ${sessionScope.SPRING_SECURITY_LAST_EXCEPTION.message} 显示错误信息
 
 #### md5加密
@@ -319,8 +320,9 @@ public class MyMessageDigestPasswordEncoder extends MessageDigestPasswordEncoder
  {% endcodeblock %}
 
 #### 静态资源控制
-HttpSecurity的ignoring()与WebSecurity的permitAll()都可以控制静态资源。 WebSecurityConfigurerAdapter提供了三个configure方法，分别提供对AuthenticationManagerBuilder，WebSecurity与HttpSecurity的配置，其中AuthenticationManagerBuilder进行账号认证配置。
-WebSecurity主要是跟web资源相关的配置，HttpSecurity则是对所有http请求进行管理，两者可以控制静态资源的权限，但本质的区别在于：
+&emsp;&emsp;HttpSecurity的ignoring()与WebSecurity的permitAll()都可以控制静态资源。
+ &emsp;&emsp;WebSecurityConfigurerAdapter提供了三个configure方法，分别提供对AuthenticationManagerBuilder，WebSecurity与HttpSecurity的配置，其中AuthenticationManagerBuilder进行账号认证配置。
+&emsp;&emsp;WebSecurity主要是跟web资源相关的配置，HttpSecurity则是对所有http请求进行管理，两者可以控制静态资源的权限，但本质的区别在于：
 {% blockquote %}
 HttpSecurity的ignoring()完全绕过了spring security的所有filter，相当于不走验证，比较适合配置前端相关的静态资源；
 HttpSecurity的permitAll()则没有绕过spring security，其中包含了登录的以及匿名的，会给没有登录的用户适配一个AnonymousAuthenticationToken，设置到SecurityContextHolder，方便后面的filter可以统一处理authentication。
@@ -346,15 +348,15 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
  }
  {% endcodeblock %}
  
- 开启CSRF后，页面所有表单提交都需要带上token，如果页面是jsp/thymeleaf模板可以将token存进通用的页面中
+ &emsp;&emsp;开启CSRF后，页面所有表单提交都需要带上token，如果页面是jsp/thymeleaf模板可以将token存进通用的页面中
  {% codeblock lang:js %}
  <meta name="_csrf" content="${_csrf.token}"/>
  <meta name="_csrf_header" content="${_csrf.headerName}"/>
   {% endcodeblock %}
   
-  如果想偷懒的话，也可以直接在CsrfSecurityRequestMatcher中对相应接口放行，我就是这么做的(逃
+  &emsp;&emsp;~~如果想偷懒的话，也可以直接在CsrfSecurityRequestMatcher中对相应接口放行，我就是这么做的(逃~~
   
-  注意：开启csrf后注销需使用post表单提交logout
+  &emsp;&emsp;注意：开启csrf后注销需使用post表单提交logout
   
   #### 自定义LoginSuccessHandler
   {% codeblock lang:java %}
@@ -375,7 +377,7 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
    {% endcodeblock %}
    
    #### 自定义安全过滤器
-   相对于Springboot大部分的傻瓜式配置来说，这一步算是稍微复杂点的。
+   &emsp;&emsp;相对于Springboot大部分的傻瓜式配置来说，这一步算是稍微复杂点的。
    AbstractSecurityInterceptor是认证和授权的集成 ,没有继承和实现任何和过滤器相关的类，具体和过滤器有关的部分由其子类所实现。每一种受保护对象都拥有继承自AbstrachSecurityInterceptor的拦截器类。spring security 提供了两个具体实现类，MethodSecurityInterceptor 用于受保护的方法，FilterSecurityInterceptor 用于受保护的web 请求，spring security 默认的过滤器是FilterSecurityInterceptor。两者具体工作流程为：
     {% blockquote %}
     查找当前请求里分配的配置属性。
@@ -384,7 +386,7 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
     允许安全对象进行处理（假设访问被允许了）。
     在调用返回的时候执行配置的AfterInvocationManager。如果调用引发异常,AfterInvocationManager将不会被调用。
       {% endblockquote %}
-    权限鉴定是由AccessDecisionManager 接口中的decide()方法负责的。decide() 方法需要接收一个受保护对象对应的configAttribute集合的。一个configAttribute可能只是一个简单的角色名称，具体将视AccessDecisionManager的实现者而定。由于我们需要自定义过滤器，所以需要重写AbstrachSecurityInterceptor的实现。
+    &emsp;&emsp;权限鉴定是由AccessDecisionManager 接口中的decide()方法负责的。decide() 方法需要接收一个受保护对象对应的configAttribute集合的。一个configAttribute可能只是一个简单的角色名称，具体将视AccessDecisionManager的实现者而定。由于我们需要自定义过滤器，所以需要重写AbstrachSecurityInterceptor的实现。
     
    {% codeblock lang:java %}
    
@@ -540,10 +542,10 @@ public class CsrfSecurityRequestMatcher implements RequestMatcher {
   }
   
 {% endcodeblock %} 
- 注意：这里有个坑，由于项目采用Mybatis作为持久化框架,FilterInvocationSecurityMetadataSource中采用@Autowired注入mapper时可能会报错，建议在xml里面配置强制注入mapper。
+ &emsp;&emsp;注意：这里有个坑，由于项目采用Mybatis作为持久化框架,FilterInvocationSecurityMetadataSource中采用@Autowired注入mapper时可能会报错，建议在xml里面配置强制注入mapper。
 
 #### Basic认证 
-如果项目提供的是restful服务，需要对请求进行basic认证，也非常简单
+&emsp;&emsp;如果项目提供的是restful服务，需要对请求进行basic认证，也非常简单
 
 {% codeblock lang:java %}
 @Override

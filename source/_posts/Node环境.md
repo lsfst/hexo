@@ -7,9 +7,9 @@ categories: node
 
 最近有点小闲，开始学习NodeJS相关的东西。之前Node与NPM已经安装好了，环境变量也设置ok：
 
-{% asset_img node1.png 版本 %}
-
-话不多说，npm install 四连走起：
+<div align=center>{% asset_img node1.png 版本 %}</div>
+<br/>
+话不多说，npm install 四连走起（这里可以按照需要安装想要的包）：
 
 {% codeblock  lang:bash  %}
 npm install express -g 
@@ -22,9 +22,10 @@ npm install -g express-generator
 
 {% asset_img node2.png jade警告 %}
 
-原来是改名成pug了，问题不大，继续下一步！
+原来是改名成pug了，问题不大，继续下一步！  
 
 在控制台运行：
+
 {% asset_img node3.png 一切正常 %}
 
 由于平时干后端习惯了使用idea，而且idea也提供了NodeJS插件，所以接下来直接在idea中安装NodeJS插件。
@@ -36,13 +37,15 @@ npm install -g express-generator
 
 {% asset_img node5.png 下载失败 %}
 
-不慌，可以直接去 [idea plugin 官网](https://plugins.jetbrains.com/)下载插件
+遇到这种情况可以直接去 [idea plugin 官网](https://plugins.jetbrains.com/)下载插件
 直接输入NodeJS，回车，插件版本有很多，选了一个最新的版本下载，解压，将解压文件夹里面的NodeJS子文件夹复制到idea所在安装目录的plugins子文件夹中
 
 {% asset_img node6.png 解压复制 %}
-
+  
+  
 之后重启idea，安装按钮消失，看起来是ok了
-
+  
+  
 {% asset_img node7.png 按钮消失 %}
 
 File -> new ->Project创建应用：
@@ -57,7 +60,7 @@ File -> new ->Project创建应用：
 
 结果还是不行：
 
-{% asset_img node10.png 版本不兼容 %}
+<div align=center>{% asset_img node10.png 版本不兼容 %}</div>
 
 原来是插件与idea的版本不兼容，需要适配。
 
@@ -81,15 +84,21 @@ File -> new ->Project创建应用：
 
 然后创建第一个应用：发现红框处无法获取版本，莫不是加载方式的锅？
 
-{% asset_img node15.png 重新加载 %}
+<div align=center>{% asset_img node15.png 重新加载 %}</div>
 
-于是又尝试着直接将压缩包解压的文件夹放在plugins目录下，这次可以正常获取版本了
+于是又尝试着直接将压缩包解压的文件夹放在plugins目录下，这次可以正常获取版本了。 ~~这坑是真心多（<font color=red>逃</font>~~
 
 最后总结一下这个插件安装流程：
-1.File -> setting ->Plugins->Browe repositories，搜索nodejs,下载
+**1.File -> setting ->Plugins->Browe repositories，搜索nodejs,下载
 2.若下载失败，去 [官网](https://plugins.jetbrains.com/)下载对应插件压缩包，将压缩包解压，NodeJS文件夹直接放在idea安装目录下的plugins子目录下
-3.重启idea，就可以正常创建
+3.重启idea，就可以正常创建**      
 
+<font color=red>
 一定要注意的点：
-1.插件与idea版本的匹配
-2.Install plugin from disk加载压缩包在创建应用时无法正常获取express版本，最好直接解压放在idea安装目录的plugins下
+***1.插件与idea版本的匹配
+2.Install plugin from disk加载压缩包在创建应用时无法正常获取express版本，最好直接解压放在idea安装目录的plugins下  
+***
+
+补充：后来在Mac上面重新安装了一次，没遇到上面的问题，看来正常情况下idea可下载的NodeJS插件应该是跟自身版本匹配的，当然真要是出了问题也可以按照上面步骤解决
+</font>
+
